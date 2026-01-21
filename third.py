@@ -15,7 +15,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
-os.environ['LANGCHAIN_PROJECT'] = 'Sequential App'
+os.environ['LANGCHAIN_PROJECT'] = 'Sequential App3'
 
 
 

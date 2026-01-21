@@ -12,18 +12,18 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from sentence_transformers import SentenceTransformer
-
+from langchain_huggingface import HuggingFaceEmbeddings
 from langsmith import traceable
 
-os.environ['LANGCHAIN_PROJECT'] = 'Sequential App'
+os.environ['LANGCHAIN_PROJECT'] = 'Sequential App2'
 
 
 
-pdf_path ='ML_System_Design_Part5.pdf'
+pdf_path ='Resume__priya__yadav.pdf'
 
 
 #load pdf
-@traceable(name  = 'load_pdf')
+@traceable(name  = 'load_pdf',tags=['pdf' , 'loader'],metadata={"loader" : "PyPdfLoader"})
 def load_pdf(pdf_path):
     loader =PyPDFLoader(pdf_path)
     return loader.load()#one document per page
@@ -38,8 +38,9 @@ def split_documents(docs):
 # emb = OpenAIEmbeddings(model = 'text-embedding-3-small')
 @traceable(name='build_vectorstore')
 def build_vectorize(splits):
-    emb = SentenceTransformer("all-MiniLM-L6-v2")
-
+    emb = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
     vs = FAISS.from_documents(splits,emb)
     return vs
     # retriever = vs.as_retriever(search_type = 'similiarity',search_kwargs={"k" : 4})
@@ -58,15 +59,15 @@ llm =ChatGroq(model='llama-3.1-8b-instant',api_key=api_key)
 
 #4 Prompt
 prompt = ChatPromptTemplate.from_messages([
-    {"system" : "Answer Only from the provide context. If not found ,say you do not know. "},
-    {"human" ,"Question: {question}\n\nContext:\n{Context}"}
+    ("system", "Answer only from the provided context. If not found, say you do not know."),
+    ("human", "Question: {question}\n\nContext:\n{context}")
 ])
 
 
 # llm = ChatOpenAI(model= "gpt-4o-mini",temperature = 0 )
 
 def format_docs(docs):
-    return "\n\n".join(d.page_count for d in docs)
+    return "\n\n".join(d.page_content for d in docs)
 
 
 #build the index under traced setup
