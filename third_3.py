@@ -17,7 +17,7 @@ from langsmith import traceable
 from pathlib import Path
 os.environ['LANGCHAIN_PROJECT'] = 'Sequential App2'
 import hashlib
-
+import json
 
 pdf_path ='Resume__priya__yadav.pdf'
 INDEX_ROOT = Path(".indices")
